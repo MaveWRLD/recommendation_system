@@ -14,10 +14,10 @@ from .factories import MovieFactory
 def test_create_movie(client):
     # arrange
     url = reverse("movies:movie-api")
-    data = {"title": "A New Hope", "genres": json.dumps(["Sci-fi", "Adventure"])}
+    data = {"title": "A New Hope", "genres": ["Sci-fi", "Adventure"]}
 
     # act
-    response = client.post(url, json=data)
+    response = client.post(url, data=json.dumps(data), content_type="application/json")
 
     # assert
     assert response.status_code == status.HTTP_201_CREATED, response.json()
@@ -41,12 +41,12 @@ def test_retrieve_movie(client):
 
 @pytest.mark.django_db
 def test_update_movie(client):
-    movie = MovieFactory
-    new_title = ""
+    movie = MovieFactory()
+    new_title = "Inception"
     url = reverse("movies:movie-api-detail", kwargs={"pk": movie.id})
     data = {"title": new_title}
 
-    response = client.put(url, data=data, content_type="application/json")
+    response = client.put(url, data=json.dumps(data), content_type="application/json")
 
     assert response.status_code == status.HTTP_200_OK, response.json()
     movie = Movie.objects.filter(id=movie.id).first()
@@ -83,7 +83,6 @@ def test_list_movie_pagination(client):
     assert "results" in data
 
     assert data["count"] == 10
-    assert data["next"] is not None
 
     assert len(data["results"]) == 10
 
