@@ -3,19 +3,7 @@ from rest_framework import serializers
 from .models import Movie
 
 
-class MovieSerializer(serializers.Serializer):
-    id = serializers.IntegerField(label="MovieId", required=False)
-    title = serializers.CharField(max_length=255)
-    genres = serializers.ListField(
-        child=serializers.CharField(max_length=255), allow_empty=False, default=list
-    )
-
-    def create(self, validated_data):
-        return Movie.objects.create(**validated_data)
-    
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get("title", instance.title)
-        instance.genres = validated_data.get("genres", instance.genres)
-        instance.save
-        return instance
-        
+class MovieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ["id", "title", "genres"]
